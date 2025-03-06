@@ -14,12 +14,12 @@ public class CartService extends MainService<Cart> {
 
     //The Dependency Injection Variables
 
-    private final CartRepository cartRepository;
+    CartRepository cartRepository;
 
     //The Constructor with the requried variables mapping the Dependency Injection.
     @Autowired
     public CartService(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
+        super(cartRepository) ;
     }
 
 
