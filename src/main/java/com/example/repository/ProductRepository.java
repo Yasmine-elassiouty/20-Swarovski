@@ -17,7 +17,7 @@ public class ProductRepository extends MainRepository<Product> {
     // Provide the path to the JSON file for products
     @Override
     protected String getDataPath() {
-        return "data/products.json";
+        return "src/main/java/com/example/data/products.json";
     }
 
     // Provide the array type for deserialization
@@ -28,9 +28,7 @@ public class ProductRepository extends MainRepository<Product> {
 
     // Add a new product
     public Product addProduct(Product product) {
-        ArrayList<Product> products = findAll();
-        products.add(product);
-        saveAll(products);
+        save(product);
         return product;
     }
 
