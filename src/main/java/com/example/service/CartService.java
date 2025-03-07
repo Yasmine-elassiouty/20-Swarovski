@@ -14,12 +14,13 @@ public class CartService extends MainService<Cart> {
 
     //The Dependency Injection Variables
 
-    CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
     //The Constructor with the requried variables mapping the Dependency Injection.
     @Autowired
-    public CartService(CartRepository cartRepository) {
-        super(cartRepository) ;
+    public CartService(CartRepository cartRepository, Cart cart) {
+        super(cartRepository);
+        this.cartRepository = cartRepository;
     }
 
 
@@ -48,7 +49,7 @@ public class CartService extends MainService<Cart> {
         if (cart != null) {
             cartRepository.addProductToCart(cartId, product);
         } else {
-            throw new IllegalArgumentException("Cart not found!");
+            throw new IllegalArgumentException("Cart not found");
         }
     }
 
@@ -56,9 +57,10 @@ public class CartService extends MainService<Cart> {
     public void deleteProductFromCart(UUID cartId, Product product) {
         Cart cart = cartRepository.getCartById(cartId);
         if (cart != null) {
+            if(product != null) { throw new IllegalArgumentException("product not found");}
             cartRepository.deleteProductFromCart(cartId, product.getId()); // Uses full product details
         } else {
-            throw new IllegalArgumentException("Cart not found!");
+            throw new IllegalArgumentException("Cart not found");
         }
     }
 
@@ -68,7 +70,7 @@ public class CartService extends MainService<Cart> {
         if (cartRepository.getCartById(cartId) != null) {
             cartRepository.deleteCartById(cartId);
         } else {
-            throw new IllegalArgumentException("Cart not found!");
+            throw new IllegalArgumentException("Cart not found");
         }
     }
 }
