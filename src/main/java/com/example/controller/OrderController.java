@@ -19,27 +19,26 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // Endpoint to add a new order
-    @PostMapping("/add")
-    public String addOrder(@RequestBody Order order) {
+    // 8.4.2.1 Add Order
+    @PostMapping("/")
+    public void addOrder(@RequestBody Order order) {
         orderService.addOrder(order);
-        return "Order added successfully!";
     }
 
-    // Endpoint to get all orders
-    @GetMapping("/all")
-    public ArrayList<Order> getOrders() {
-        return orderService.getOrders();
-    }
-
-    // Endpoint to get a specific order by ID
+    // 8.4.2.2 Get a Specific Order by ID
     @GetMapping("/{orderId}")
     public Order getOrderById(@PathVariable UUID orderId) {
         return orderService.getOrderById(orderId);
     }
 
-    // Endpoint to delete a specific order by ID
-    @DeleteMapping("/{orderId}")
+    // 8.4.2.3 Get All Orders
+    @GetMapping("/")
+    public ArrayList<Order> getOrders() {
+        return orderService.getOrders();
+    }
+
+    // 8.4.2.4 Delete a Specific Order
+    @DeleteMapping("/delete/{orderId}")
     public String deleteOrderById(@PathVariable UUID orderId) {
         orderService.deleteOrderById(orderId);
         return "Order deleted successfully!";

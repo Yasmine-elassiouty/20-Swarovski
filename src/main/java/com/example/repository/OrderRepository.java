@@ -3,6 +3,7 @@ package com.example.repository;
 import com.example.model.Order;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,16 +13,25 @@ import java.util.UUID;
 public class OrderRepository extends MainRepository<Order> {
 
     public OrderRepository() {
+        ensureDataFolderExists(); // Ensure the 'data' folder exists
     }
 
     @Override
     protected String getDataPath() {
-        return "orders.json"; // Path to store JSON data
+        return "src/main/java/com/example/data/orders.json"; // Store the file inside the 'data' folder
     }
 
     @Override
     protected Class<Order[]> getArrayType() {
         return Order[].class;
+    }
+
+    // Ensure the 'data' folder exists before writing the JSON file
+    private void ensureDataFolderExists() {
+        File folder = new File("data");
+        if (!folder.exists()) {
+            folder.mkdirs(); // Create the folder if it doesn't exist
+        }
     }
 
     // 6.5.2.1 Add Order
