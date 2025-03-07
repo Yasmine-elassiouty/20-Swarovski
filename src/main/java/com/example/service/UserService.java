@@ -32,14 +32,14 @@ public class UserService extends MainService<User>{
 
     // 7.2.2.1
     public User addUser(User user) {
-       return userRepository.addUser(user);
+        return userRepository.addUser(user);
 
     }
 
     // 7.2.2.2
     public ArrayList<User> getUsers() {
 
-        return userRepository.findAll();
+        return userRepository.getUsers();
     }
 
     // 7.2.2.3 Get a Specific User
@@ -91,13 +91,13 @@ public class UserService extends MainService<User>{
 
     }
 
-//    7.2.2.7 Remove Order
+    //    7.2.2.7 Remove Order
 //    To remove a specific order from the list of orders of the user.
     public void removeOrderFromUser(UUID userId, UUID orderId){
         userRepository.removeOrderFromUser(userId, orderId);
     }
 
-//    7.2.2.8 Delete the User
+    //    7.2.2.8 Delete the User
 //    To delete a specific user by passing his ID.
     public void deleteUserById(UUID userId){
         userRepository.deleteUserById(userId);
