@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -58,19 +59,19 @@ public class UserController {
     @PostMapping("/{userId}/checkout")
     public String addOrderToUser(@PathVariable UUID userId){
         userService.addOrderToUser(userId);
-        return "Order added successfully.";
+        return "Order added successfully";
     }
 
     @PostMapping("/{userId}/removeOrder")
     public String removeOrderFromUser(@PathVariable UUID userId, @RequestParam UUID orderId){
         userService.removeOrderFromUser(userId, orderId);
-        return "Order removed successfully.";
+        return "Order removed successfully";
     }
 
     @DeleteMapping("/{userId}/emptyCart")
     public String emptyCart(@PathVariable UUID userId){
         userService.emptyCart(userId);
-        return "Cart emptied successfully.";
+        return "Cart emptied successfully";
     }
 
 //    8.1.2.8 Add Product To the Cart
@@ -88,7 +89,7 @@ public class UserController {
         }
 
         cartService.addProductToCart(cart.getId(), product);
-        return "Product added to cart successfully.";
+        return "Product added to cart successfully";
     }
 
 //    8.1.2.9 Delete Product from the Cart
@@ -104,15 +105,20 @@ public class UserController {
             return "Product not found";
         }
         cartService.deleteProductFromCart(cart.getId(), product);
-        return "Product removed from cart successfully.";
+        return "Product removed from cart successfully";
     }
 
 //    8.1.2.10 Delete User
 //    Delete Request to delete a specific user.
     @DeleteMapping("/delete/{userId}")
     public String deleteUserById(@PathVariable UUID userId){
-        userService.deleteUserById(userId);
-        return "User deleted successfully.";
+        try {
+            userService.deleteUserById(userId);
+            return "User deleted successfully";
+        } catch (NoSuchElementException e) {
+            return "User not found";  // Keep return type as String
+        }
+
     }
 
 
