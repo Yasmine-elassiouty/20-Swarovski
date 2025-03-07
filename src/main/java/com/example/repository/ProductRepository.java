@@ -9,37 +9,34 @@ import java.util.UUID;
 @Repository
 public class ProductRepository extends MainRepository<Product> {
 
-    // Constructor
+
     public ProductRepository() {
         super();
     }
 
-    // Provide the path to the JSON file for products
+
     @Override
     protected String getDataPath() {
-        return "data/products.json";
+        return "src/main/java/com/example/data/products.json";
     }
 
-    // Provide the array type for deserialization
+
     @Override
     protected Class<Product[]> getArrayType() {
         return Product[].class;
     }
 
-    // Add a new product
+
     public Product addProduct(Product product) {
-        ArrayList<Product> products = findAll();
-        products.add(product);
-        saveAll(products);
+        save(product);
         return product;
     }
 
-    // Get all products
+
     public ArrayList<Product> getProducts() {
         return findAll();
     }
 
-    // Get a specific product by ID
     public Product getProductById(UUID productId) {
         ArrayList<Product> products = findAll();
         return products.stream()
@@ -48,7 +45,7 @@ public class ProductRepository extends MainRepository<Product> {
                 .orElse(null);
     }
 
-    // Update a product
+
     public Product updateProduct(UUID productId, String newName, double newPrice) {
         ArrayList<Product> products = findAll();
         for (Product product : products) {
@@ -62,7 +59,6 @@ public class ProductRepository extends MainRepository<Product> {
         return null;
     }
 
-    // Apply discount to a list of products
     public void applyDiscount(double discount, ArrayList<UUID> productIds) {
         ArrayList<Product> products = findAll();
         for (Product product : products) {
@@ -74,7 +70,7 @@ public class ProductRepository extends MainRepository<Product> {
         saveAll(products);
     }
 
-    // Delete a product by ID
+
     public void deleteProductById(UUID productId) {
         ArrayList<Product> products = findAll();
         products.removeIf(product -> product.getId().equals(productId));

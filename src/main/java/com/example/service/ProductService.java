@@ -13,6 +13,7 @@ public class ProductService extends MainService<Product> {
 
     @Autowired
     public ProductService(ProductRepository productRepository) {
+
         super(productRepository);
     }
 
