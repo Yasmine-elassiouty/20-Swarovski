@@ -11,9 +11,10 @@ import java.util.UUID;
 @Repository
 @SuppressWarnings("rawtypes")
 public class UserRepository extends MainRepository<User>{
-    String FILE_PATH = "src/main/java/data/users.json";
+    String FILE_PATH = "src/main/java/com/example/data/users.json";
 
     public UserRepository() {
+        super();
     }
 
     @Override
