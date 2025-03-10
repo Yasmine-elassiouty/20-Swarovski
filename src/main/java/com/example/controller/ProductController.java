@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -15,12 +16,12 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping()
+    @PostMapping("/")
     public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 
-    @GetMapping()
+    @GetMapping("/")
     public ArrayList<Product> getProducts() {
         return productService.getProducts();
     }
@@ -31,10 +32,11 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestBody String newName, @RequestBody double newPrice) {
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String, Object> body) {
+        String newName = (String) body.get("newName");
+        double newPrice = Double.parseDouble(body.get("newPrice").toString()); // Ensure it's converted properly
         return productService.updateProduct(productId, newName, newPrice);
     }
-
 
     @PutMapping("/applyDiscount")
     public String applyDiscount(@RequestParam double discount,@RequestBody ArrayList<UUID>
