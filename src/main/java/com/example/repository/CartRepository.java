@@ -20,7 +20,9 @@ public class CartRepository extends MainRepository<Cart> {
         return Cart[].class;
     }
 
-
+    public CartRepository(){
+        super();
+    }
     public Cart addCart(Cart cart) {
         save(cart);
         return cart;
