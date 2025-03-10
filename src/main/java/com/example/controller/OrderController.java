@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 public class OrderController {
 
     private final OrderService orderService;

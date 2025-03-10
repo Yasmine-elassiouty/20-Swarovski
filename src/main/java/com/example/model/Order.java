@@ -22,7 +22,7 @@ public class Order {
         this.id = id;
         this.userId = userId;
         this.products = products;
-        this.totalPrice = totalPrice;
+        this.totalPrice = calculateTotalPrice();
     }
 
     public Order(UUID userId, List<Product> products) {
