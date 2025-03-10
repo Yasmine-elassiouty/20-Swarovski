@@ -35,7 +35,7 @@ public class ProductService extends MainService<Product> {
     }
 
     public void applyDiscount(double discount, ArrayList<UUID> productIds) {
-        productRepository.applyDiscount(discount, productIds);
+    productRepository.applyDiscount(discount, productIds);
     }
 
     public void deleteProductById(UUID productId) {
