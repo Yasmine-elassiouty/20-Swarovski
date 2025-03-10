@@ -98,14 +98,16 @@ public class UserController {
     public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId){
         Cart cart = cartService.getCartByUserId(userId);
         Product product = productService.getProductById(productId);
-        if (cart == null) {
-            return "Cart not found for" + userId ;
+        if (cart == null || cart.getProducts().isEmpty()) {
+            return "Cart is empty";
         }
+
         if (product == null) {
             return "Product not found";
         }
         cartService.deleteProductFromCart(cart.getId(), product);
-        return "Product removed from cart successfully";
+        return "Product deleted from cart";
+
     }
 
 //    8.1.2.10 Delete User
