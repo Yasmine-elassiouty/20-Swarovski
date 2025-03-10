@@ -73,7 +73,13 @@ public class ProductRepository extends MainRepository<Product> {
 
     public void deleteProductById(UUID productId) {
         ArrayList<Product> products = findAll();
-        products.removeIf(product -> product.getId().equals(productId));
-        saveAll(products);
+        boolean removed = products.removeIf(product -> product.getId().equals(productId));
+
+        if (removed) {
+            saveAll(products); 
+        } else {
+            throw new RuntimeException("Product not found: " + productId);
+        }
     }
+
 }

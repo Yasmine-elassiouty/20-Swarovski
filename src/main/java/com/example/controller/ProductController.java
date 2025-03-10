@@ -15,12 +15,12 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/")
+    @PostMapping()
     public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 
-    @GetMapping("/")
+    @GetMapping()
     public ArrayList<Product> getProducts() {
         return productService.getProducts();
     }
@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestParam String newName, @RequestParam double newPrice) {
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody String newName, @RequestBody double newPrice) {
         return productService.updateProduct(productId, newName, newPrice);
     }
 
@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{productId}")
-    public void deleteProductById(@PathVariable UUID productId) {
+    public String deleteProductById(@PathVariable UUID productId) {
         productService.deleteProductById(productId);
-    }
-}
+        return "Product deleted successfully";
+    }}

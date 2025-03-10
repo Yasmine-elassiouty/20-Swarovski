@@ -26,7 +26,6 @@ public class Product {
         this.price = price;
     }
 
-    // Getters and Setters
     public UUID getId() {
         return id;
     }
