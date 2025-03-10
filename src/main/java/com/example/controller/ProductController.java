@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,17 +32,21 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestParam String newName, @RequestParam double newPrice) {
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String, Object> body) {
+        String newName = (String) body.get("newName");
+        double newPrice = Double.parseDouble(body.get("newPrice").toString()); // Ensure it's converted properly
         return productService.updateProduct(productId, newName, newPrice);
     }
 
     @PutMapping("/applyDiscount")
-    public void applyDiscount(@RequestParam double discount, @RequestBody ArrayList<UUID> productIds) {
+    public String applyDiscount(@RequestParam double discount,@RequestBody ArrayList<UUID>
+            productIds) {
         productService.applyDiscount(discount, productIds);
+        return "Discount applied successfully";
     }
 
     @DeleteMapping("/delete/{productId}")
-    public void deleteProductById(@PathVariable UUID productId) {
+    public String deleteProductById(@PathVariable UUID productId) {
         productService.deleteProductById(productId);
-    }
-}
+        return "Product deleted successfully";
+    }}

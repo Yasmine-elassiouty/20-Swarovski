@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
 import com.example.model.User;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,10 @@ public class UserService extends MainService<User>{
 
 
     @Autowired
-    public UserService(UserRepository userRepository, User user) {
+    public UserService(UserRepository userRepository, CartService cartService) {
         super(userRepository);
         this.userRepository = userRepository;
+        this.cartService = cartService;
     }
 
 
@@ -79,17 +81,18 @@ public class UserService extends MainService<User>{
     }
 
     //7.2.2.6 Empty Cart
-    public void emptyCart(UUID userId){
+    public void emptyCart(UUID userId) {
         Cart cart = cartService.getCartByUserId(userId);
-        //This method should empty the cart of the user from the products present inside. It should call methods
-        //from CartService
+
         if (cart != null) {
-            cartService.deleteCartById(cart.getId());
+            for (Product product : new ArrayList<>(cart.getProducts())) {
+                cartService.deleteProductFromCart(cart.getId(), product);
+            }
         } else {
             throw new IllegalArgumentException("Cart not found!");
         }
-
     }
+
 
     //    7.2.2.7 Remove Order
 //    To remove a specific order from the list of orders of the user.

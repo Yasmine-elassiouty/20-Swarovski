@@ -68,27 +68,32 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
 
-    public void deleteProductFromCart(UUID cartId, UUID productId) {
-        ArrayList<Cart> carts = findAll();
-        boolean updated = false;
 
-        for (Cart cart : carts) {
-            if (cart.getId().equals(cartId)) {
-                boolean removed = cart.getProducts().removeIf(product -> product.getId().equals(productId));
-                if (removed) {
-                    updated = true;
+        public void deleteProductFromCart(UUID cartId, UUID productId) {
+            ArrayList<Cart> carts = findAll();
+            boolean updated = false;
+
+            for (Cart cart : carts) {
+                if (cart.getId().equals(cartId)) {
+                    boolean removed = cart.getProducts().removeIf(product -> product.getId().equals(productId));
+                    if (removed) {
+                        updated = true;
+                    } else {
+                        throw new IllegalArgumentException("Product not found in cart!");
+                    }
+                    break;
                 }
-                break; // Stop searching once the cart is found
+            }
+
+            if (updated) {
+                saveAll(carts);
+            } else {
+                throw new IllegalArgumentException("Cart not found!");
             }
         }
 
-        if (updated) {
-            saveAll(carts);
-        }
-    }
 
-
-    public void deleteCartById(UUID cartId) {
+        public void deleteCartById(UUID cartId) {
         ArrayList<Cart> carts = findAll();
         boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
 

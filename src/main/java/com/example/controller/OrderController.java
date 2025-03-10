@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 public class OrderController {
 
     private final OrderService orderService;
@@ -37,10 +37,14 @@ public class OrderController {
         return orderService.getOrders();
     }
 
-    // 8.4.2.4 Delete a Specific Order
     @DeleteMapping("/delete/{orderId}")
     public String deleteOrderById(@PathVariable UUID orderId) {
-        orderService.deleteOrderById(orderId);
-        return "Order deleted successfully!";
+        try {
+            orderService.deleteOrderById(orderId);
+            return "Order deleted successfully";
+        } catch (IllegalArgumentException e) {
+            return "Order not found";
+        }
     }
+
 }
