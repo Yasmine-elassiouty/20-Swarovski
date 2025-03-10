@@ -6,14 +6,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Repository
 @SuppressWarnings("rawtypes")
 public class UserRepository extends MainRepository<User>{
-    String FILE_PATH = "src/main/java/data/users.json";
+    String FILE_PATH = "src/main/java/com/example/data/users.json";
 
     public UserRepository() {
+        super();
     }
 
     @Override
@@ -84,8 +86,13 @@ public class UserRepository extends MainRepository<User>{
 //    Delete a user by passing his/her ID.
     public void deleteUserById(UUID userId){
         List<User> users = findAll();
-        users.removeIf(user -> user.getId().equals(userId));
-        saveAll(new ArrayList<>(users));
+        boolean removed = users.removeIf(user -> user.getId().equals(userId));
+        if (removed) {
+            saveAll(new ArrayList<>(users));
+        }
+        else {
+            throw new NoSuchElementException("User not found");
+        }
 
     }
 

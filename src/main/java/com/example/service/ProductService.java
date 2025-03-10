@@ -40,4 +40,4 @@ public class ProductService extends MainService<Product> {
 
     public void deleteProductById(UUID productId) {
         productRepository.deleteProductById(productId);
-}}
+    }}
