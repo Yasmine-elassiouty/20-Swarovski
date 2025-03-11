@@ -86,10 +86,11 @@ public class UserController {
             // create a new cart to this user
             cart = new Cart();
             cart.setUserId(userId);
+            cart = cartService.addCart(cart);
         }
 
         cartService.addProductToCart(cart.getId(), product);
-        return "Product added to cart successfully";
+        return "Product added to cart";
     }
 
 //    8.1.2.9 Delete Product from the Cart
