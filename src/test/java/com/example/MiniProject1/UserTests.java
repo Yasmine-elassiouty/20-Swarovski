@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -377,21 +379,133 @@ public class UserTests {
         });
     }
 
-//    // 5) AddOrderToUser
-//    @Test
-//    void AddOrderToUser_Success(){
-//       testCart.addProduct(testProduct);
-//
-//
-//       userService.addOrderToUser(userId);
-//
-//        User updatedUser = userService.getUserById(userId);
-//        Assertions.assertNotNull(updatedUser, "User should exist");
-//        Assertions.assertEquals(1, updatedUser.getOrders().size(), "User should have one order");
-//        Assertions.assertEquals(1, updatedUser.getOrders().get(0).getProducts().size(), "Order should have one product");
-//        Assertions.assertEquals(productId, updatedUser.getOrders().get(0).getProducts().get(0).getId(), "Product ID should match");
-//    }
+    // 5) AddOrderToUser
+    @Test
+    void AddOrderToUser_Success(){
+        testCart.addProduct(testProduct);
+        addCart(testCart);
+        addProduct(testProduct);
+        addUser(testUser);
+        userService.addOrderToUser(testUser.getId());
 
+        User updatedUser = userService.getUserById(userId);
+        Assertions.assertNotNull(updatedUser, "User should exist");
+        Assertions.assertEquals(1, updatedUser.getOrders().size(), "User should have one order");
+        Assertions.assertEquals(1, updatedUser.getOrders().get(0).getProducts().size(), "Order should have one product");
+        Assertions.assertEquals(testProduct.getId(), updatedUser.getOrders().get(0).getProducts().get(0).getId(), "Product ID should match");
+    }
+
+    @Test
+    void AddOrderToUser_EmptyCart(){
+        addUser(testUser);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            userService.addOrderToUser(testUser.getId());
+        });
+    }
+
+    @Test
+    void AddOrderToUser_InvalidUser(){
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            userService.addOrderToUser(UUID.randomUUID());
+        });
+    }
+
+    // 6) EmptyCart
+    @Test
+    void EmptyCart_Success() {
+        addUser(testUser);
+        addCart(testCart);
+        testCart.addProduct(testProduct);
+        addProduct(testProduct);
+        userService.emptyCart(testUser.getId());
+        Assertions.assertTrue(userService.getOrdersByUserId(testUser.getId()).isEmpty());
+    }
+
+    @Test
+    void EmptyCart_NoUser() {
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            userService.emptyCart(UUID.randomUUID());
+        });
+    }
+
+    @Test
+    void EmptyCart_NoCart() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            addUser(testUser);
+            userService.emptyCart(testUser.getId());
+        });
+    }
+
+
+    // 7) RemoveOrderFromUser Tests
+    @Test
+    void RemoveOrderFromUser_Success() {
+        // Setup
+        Order order = new Order();
+        order.setId(UUID.randomUUID());
+        order.setUserId(userId);
+        testUser.getOrders().add(order);
+        addUser(testUser);
+
+        // Execute
+        userService.removeOrderFromUser(userId, order.getId());
+
+        // Verify
+        User updatedUser = userService.getUserById(userId);
+        assertTrue(updatedUser.getOrders().isEmpty(), "Order should be removed");
+    }
+
+    @Test
+    void RemoveOrderFromUser_UserNotFound() {
+        // Execute & Verify
+        UUID nonExistentUserId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.removeOrderFromUser(nonExistentUserId, orderId);
+        }, "Should throw exception when user not found");
+    }
+
+    @Test
+    void RemoveOrderFromUser_OrderNotFound() {
+        // Setup
+        addUser(testUser);
+
+        // Execute & Verify
+        UUID nonExistentOrderId = UUID.randomUUID();
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.removeOrderFromUser(userId, nonExistentOrderId);
+        }, "Should throw exception when order not found");
+    }
+
+    // 8) DeleteUserById Tests
+    @Test
+    void DeleteUserById_Success() {
+        // Setup
+        addUser(testUser);
+
+        // Execute
+        userService.deleteUserById(userId);
+
+        // Verify
+        User deletedUser = userService.getUserById(userId);
+        assertNull(deletedUser, "User should be deleted");
+    }
+
+    @Test
+    void DeleteUserById_UserNotFound() {
+        // Execute & Verify
+        UUID nonExistentUserId = UUID.randomUUID();
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.deleteUserById(nonExistentUserId);
+        }, "Should throw exception when user not found");
+    }
+
+    @Test
+    void DeleteUserById_NullUser(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.deleteUserById(null);
+        }, "User id should not be null");
+    }
 
 
 

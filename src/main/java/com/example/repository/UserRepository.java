@@ -91,6 +91,18 @@ public class UserRepository extends MainRepository<User>{
     //6.2.2.6 Remove Order from User
     //Let the user remove one of his/her orders.
     public void removeOrderFromUser(UUID userId, UUID orderId){
+        if(userId == null){
+            throw new IllegalArgumentException("Id passed cannot be null");
+        }
+        else if (getUserById(userId) == null){
+            throw new NoSuchElementException("User not found");
+        }
+        else if (orderId == null){
+            throw new IllegalArgumentException("Id passed cannot be null");
+        }
+        else if (getUserById(userId).getOrders().stream().noneMatch(order -> order.getId().equals(orderId))){
+            throw new NoSuchElementException("Order not found");
+        }
         List<User> users = findAll();
         for (User user : users) {
             if (user.getId().equals(userId)) {
@@ -104,6 +116,9 @@ public class UserRepository extends MainRepository<User>{
 //    6.2.2.7 Delete User
 //    Delete a user by passing his/her ID.
     public void deleteUserById(UUID userId){
+        if(userId == null){
+            throw new IllegalArgumentException("Id passed cannot be null");
+        }
         List<User> users = findAll();
         boolean removed = users.removeIf(user -> user.getId().equals(userId));
         if (removed) {
