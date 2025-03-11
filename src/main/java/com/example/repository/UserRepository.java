@@ -35,6 +35,9 @@ public class UserRepository extends MainRepository<User>{
 
     //6.2.2.2
     public User getUserById(UUID userId) {
+        if(userId == null){
+            throw new IllegalArgumentException("Id passed cannot be null");
+        } else
         return findAll().stream()
                 .filter(user -> user.getId().equals(userId))
                 .findFirst()
@@ -43,12 +46,28 @@ public class UserRepository extends MainRepository<User>{
 
     //6.2.2.3
     public User addUser(User user){
+        if(user == null){
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if(getUserById(user.getId()) != null){
+            throw new IllegalArgumentException("User already exists");
+        }
+        if(user.getName() == null || user.getName().isBlank()){
+            throw new IllegalArgumentException("User name cannot be null or blank");
+        }
         save(user);
         return user;
     }
 
     //6.2.2.4
     public List<Order> getOrdersByUserId(UUID userId){
+        if(userId == null){
+            throw new IllegalArgumentException("Id passed cannot be null");
+        }
+        else if (getUserById(userId) == null){
+            throw new NoSuchElementException("User not found");
+        }
+        else
         return findAll().stream()
                 .filter(user -> user.getId().equals(userId))
                 .map(User::getOrders)
