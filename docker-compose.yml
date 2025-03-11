@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/main/java/com/example/data:/app/data
