@@ -32,6 +32,10 @@ public class OrderTests {
     @Value("${spring.application.productDataPath}")
     private String productDataPath;
 
+    @Value("${spring.application.userDataPath}")
+    private String userDataPath;
+
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -69,6 +73,7 @@ public class OrderTests {
         try {
             objectMapper.writeValue(new File(orderDataPath), new ArrayList<Order>());
             objectMapper.writeValue(new File(productDataPath), new ArrayList<Product>());
+            objectMapper.writeValue(new File(userDataPath), new ArrayList<User>());
         } catch (IOException e) {
             throw new RuntimeException("Failed to clear data files", e);
         }
@@ -146,25 +151,49 @@ public class OrderTests {
         // Assert
         ArrayList<Order> savedOrders = getOrders();
         assertEquals(1, savedOrders.size(), "Should have one order saved");
+
+        // Ensure the correct order is retrieved
+        assertEquals(testOrder.getId(), savedOrders.get(0).getId(), "Order ID should match the inserted order");
+
+        // Validate order details
         assertEquals(2, savedOrders.get(0).getProducts().size(), "Order should have two products");
         assertEquals(149.98, savedOrders.get(0).getTotalPrice(), 0.01, "Total price should be sum of product prices");
     }
 
+
     @Test
     void testAddOrder_MultipleOrders() {
-        // Arrange
+        // Arrange: Create two unique orders
         Order secondOrder = new Order(UUID.randomUUID(), new ArrayList<>());
 
-        // Act
+        // Act: Add both orders
         orderService.addOrder(testOrder);
         orderService.addOrder(secondOrder);
 
-        // Assert
+        // Assert: Retrieve all saved orders
         ArrayList<Order> savedOrders = getOrders();
-        assertEquals(2, savedOrders.size(), "Should have two orders saved");
+
+        // ✅ Ensure exactly two unique orders are saved
+        assertEquals(2, savedOrders.size(), "Should have exactly two orders saved");
+
+        // ✅ Verify both orders exist
         assertTrue(savedOrders.stream().anyMatch(o -> o.getId().equals(testOrder.getId())), "First order should be saved");
         assertTrue(savedOrders.stream().anyMatch(o -> o.getId().equals(secondOrder.getId())), "Second order should be saved");
+
+        // ✅ Check for duplicate orders (no duplicate IDs should exist)
+        long uniqueOrderCount = savedOrders.stream().map(Order::getId).distinct().count();
+        assertEquals(2, uniqueOrderCount, "Orders should not be duplicated");
+
+        // ✅ Validate that product lists are correct
+        Order savedFirstOrder = savedOrders.stream().filter(o -> o.getId().equals(testOrder.getId())).findFirst().orElse(null);
+        assertNotNull(savedFirstOrder, "First order should be retrievable");
+        assertEquals(testOrder.getProducts().size(), savedFirstOrder.getProducts().size(), "First order should retain its products");
+
+        Order savedSecondOrder = savedOrders.stream().filter(o -> o.getId().equals(secondOrder.getId())).findFirst().orElse(null);
+        assertNotNull(savedSecondOrder, "Second order should be retrievable");
+        assertEquals(0, savedSecondOrder.getProducts().size(), "Second order should have no products");
     }
+
 
     // ===== getOrders Tests (3) =====
     @Test
@@ -193,38 +222,57 @@ public class OrderTests {
 
     @Test
     void testGetOrders_Multiple() {
-        // Arrange
+        // Arrange: Create multiple orders with unique IDs
         Order order1 = new Order(UUID.randomUUID(), new ArrayList<>());
         Order order2 = new Order(UUID.randomUUID(), new ArrayList<>());
+
+        // Save the orders
         saveOrder(testOrder);
         saveOrder(order1);
         saveOrder(order2);
 
-        // Act
+        // Act: Retrieve all orders
         ArrayList<Order> orders = orderService.getOrders();
 
-        // Assert
-        assertEquals(3, orders.size(), "Should return three orders");
+        // Assert: Validate order count and presence
+        assertNotNull(orders, "Returned order list should not be null");
+        assertEquals(3, orders.size(), "Should return exactly three orders");
+
+        // Check each order's existence
         assertTrue(orders.stream().anyMatch(o -> o.getId().equals(testOrder.getId())), "Should contain test order");
         assertTrue(orders.stream().anyMatch(o -> o.getId().equals(order1.getId())), "Should contain first order");
         assertTrue(orders.stream().anyMatch(o -> o.getId().equals(order2.getId())), "Should contain second order");
+
+        // Ensure no duplicate IDs exist
+        long uniqueIds = orders.stream().map(Order::getId).distinct().count();
+        assertEquals(orders.size(), uniqueIds, "No duplicate order IDs should exist");
+
+        // Ensure correct user associations (if applicable)
+        if (!orders.isEmpty()) {
+            for (Order order : orders) {
+                assertNotNull(order.getUserId(), "Each order should have a valid user ID");
+            }
+        }
     }
+
 
     // ===== getOrderById Tests (3) =====
     @Test
     void testGetOrderById_Success() {
-        // Arrange
+        // Arrange: Save a valid order
         saveOrder(testOrder);
 
-        // Act
+        // Act: Retrieve order by ID
         Order retrievedOrder = orderService.getOrderById(testOrder.getId());
 
-        // Assert
+        // Assert: Validate retrieved order
         assertNotNull(retrievedOrder, "Retrieved order should not be null");
         assertEquals(testOrder.getId(), retrievedOrder.getId(), "Order ID should match");
         assertEquals(userId, retrievedOrder.getUserId(), "User ID should match");
         assertEquals(1, retrievedOrder.getProducts().size(), "Order should have one product");
+        assertEquals(testOrder.getProducts().get(0).getId(), retrievedOrder.getProducts().get(0).getId(), "Product ID should match");
     }
+
 
     @Test
     void testGetOrderById_NotFound() {
@@ -270,11 +318,12 @@ public class OrderTests {
 
     @Test
     void testDeleteOrderById_OrderNotFound() {
-        // Act & Assert
-        assertThrows(Exception.class, () -> {
+        // Act & Assert: Try deleting a non-existent order and expect an exception
+        assertThrows(IllegalArgumentException.class, () -> {
             orderService.deleteOrderById(UUID.randomUUID());
-        }, "Should throw exception when order not found");
+        }, "Should throw IllegalArgumentException when order not found");
     }
+
 
     @Test
     void testDeleteOrderById_MultipleOrders() {
