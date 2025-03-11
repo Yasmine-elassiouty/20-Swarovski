@@ -284,20 +284,11 @@ public class OrderTests {
     }
 
     @Test
-    void testGetOrderById_WithMultipleProducts() {
-        // Arrange
-        Product secondProduct = new Product(UUID.randomUUID(), "Second Product", 49.99);
-        saveProduct(secondProduct);
-        testOrder.getProducts().add(secondProduct);
-        saveOrder(testOrder);
-
-        // Act
-        Order retrievedOrder = orderService.getOrderById(testOrder.getId());
-
-        // Assert
-        assertNotNull(retrievedOrder, "Retrieved order should not be null");
-        assertEquals(2, retrievedOrder.getProducts().size(), "Order should have two products");
-        assertEquals(149.98, retrievedOrder.getTotalPrice(), 0.01, "Total price should be sum of product prices");
+    void testGetOrderById_NullId() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            orderService.getOrderById(null);
+        }, "Should throw an exception for null order ID");
     }
 
     // ===== deleteOrderById Tests (3) =====

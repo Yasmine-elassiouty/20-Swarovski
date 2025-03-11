@@ -46,6 +46,10 @@ public class OrderRepository extends MainRepository<Order> {
 
     // 6.5.2.3 Get a Specific Order
     public Order getOrderById(UUID orderId) {
+        // 7.5.2.3 Get a specific order by ID
+        if (orderId == null) {
+            throw new IllegalArgumentException("Order ID cannot be null");
+        }
         return findAll().stream()
                 .filter(order -> order.getId().equals(orderId))
                 .findFirst()
