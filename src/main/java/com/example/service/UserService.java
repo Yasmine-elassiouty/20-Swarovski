@@ -61,8 +61,11 @@ public class UserService extends MainService<User>{
 
         // Retrieve user's cart
         Cart userCart = cartService.getCartByUserId(userId);
-        if (userCart == null || userCart.getProducts().isEmpty()) {
-            throw new IllegalStateException("Cart is empty or not found");
+        if (userCart == null) {
+            throw new IllegalStateException("Cart not found");
+        }
+        if (userCart.getProducts().isEmpty()) {
+            throw new IllegalStateException("Cart is empty");
         }
 
         // Create a new Order based on cart items

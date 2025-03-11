@@ -31,6 +31,12 @@ public class User {
         this.id = UUID.randomUUID();
     }
 
+    public User(UUID id, String name) {
+        this.id = id;
+        this.name = name;
+        this.orders = new ArrayList<>();
+    }
+
     public User(UUID id, String name, List<Order> orders) {
         this.id = id;
         this.name = name;
