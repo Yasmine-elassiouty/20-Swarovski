@@ -36,7 +36,8 @@ public class OrderService extends MainService<Order> {
     }
 
     // 7.5.2.4 Delete a specific order
-    public void deleteOrderById(UUID orderId) {
+    public void deleteOrderById(UUID orderId) throws IllegalArgumentException {
         orderRepository.deleteOrderById(orderId);
     }
+
 }

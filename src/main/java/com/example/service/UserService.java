@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.ArrayList;
 
@@ -58,7 +59,11 @@ public class UserService extends MainService<User>{
         //Here the user checks out his cart by creating a new order. The user should empty his cart and calculate
         //everything related to his order and add the new order to his list of orders. It should call methods from
 
-
+// Retrieve user and add order
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new NoSuchElementException("User not found");
+        }
         // Retrieve user's cart
         Cart userCart = cartService.getCartByUserId(userId);
         if (userCart == null) {
@@ -74,17 +79,16 @@ public class UserService extends MainService<User>{
         newOrder.setProducts(new ArrayList<>(userCart.getProducts()));
         cartService.deleteCartById(userCart.getId());
 
-        // Retrieve user and add order
-        User user = userRepository.getUserById(userId);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
         userRepository.addOrderToUser(userId,newOrder);
 
     }
 
     //7.2.2.6 Empty Cart
     public void emptyCart(UUID userId) {
+        //check if user exists first
+        if (userRepository.getUserById(userId) == null) {
+            throw new NoSuchElementException("User not found");
+        }
         Cart cart = cartService.getCartByUserId(userId);
 
         if (cart != null) {

@@ -77,6 +77,11 @@ public class UserController {
 //    8.1.2.8 Add Product To the Cart
     @PutMapping("/addProductToCart")
     public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId){
+        // First check if the user exists
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return "User not found";
+        }
         Cart cart = cartService.getCartByUserId(userId);
         Product product = productService.getProductById(productId);
         if (product == null) {
@@ -97,6 +102,11 @@ public class UserController {
 //    Put Request to delete a specific product from the Cart
     @PutMapping("/deleteProductFromCart")
     public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId){
+        // First check if the user exists
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return "User not found";
+        }
         Cart cart = cartService.getCartByUserId(userId);
         Product product = productService.getProductById(productId);
         if (cart == null || cart.getProducts().isEmpty()) {
